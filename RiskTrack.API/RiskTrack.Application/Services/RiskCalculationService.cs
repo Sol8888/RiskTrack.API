@@ -33,5 +33,10 @@ namespace RiskTrack.API.RiskTrack.Application.Services
         {
             return lef * lm;
         }
+
+        public decimal CalculateROSI(decimal initialAle, decimal residualAle, decimal controlCost)
+        {
+            return ((initialAle - residualAle - controlCost) / controlCost) * 100;
+        }
     }
 }
