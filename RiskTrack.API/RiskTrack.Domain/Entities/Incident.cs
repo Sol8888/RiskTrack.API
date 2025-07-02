@@ -1,7 +1,12 @@
-﻿namespace RiskTrack.API.RiskTrack.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
+namespace RiskTrack.API.RiskTrack.Domain.Entities
 {
     public class Incident
     {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int IncidentId { get; set; }
         public int? AssetId { get; set; }
         public DateTime? IncidentDate { get; set; }
