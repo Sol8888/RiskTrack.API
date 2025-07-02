@@ -64,5 +64,62 @@ namespace RiskTrack.API.Controllers
             var ale = _riskService.CalculateALE(lef, lm);
             return Ok(new { AssetId = id, LEF = lef, LM = lm, ALE = ale });
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAssetById(int id)
+        {
+            var asset = await _context.Assets.FindAsync(id);
+            if (asset == null) return NotFound("Asset not found");
+            return Ok(asset);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateAsset([FromBody] Asset asset)
+        {
+            asset.CreatedAt = DateTime.UtcNow;
+            asset.UpdatedAt = DateTime.UtcNow;
+            _context.Assets.Add(asset);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetAssetById), new { id = asset.AssetId }, asset);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateAsset(int id, [FromBody] Asset updatedAsset)
+        {
+            var asset = await _context.Assets.FindAsync(id);
+            if (asset == null) return NotFound("Asset not found");
+
+            // Actualizar campos (hazlo cuidadosamente)
+            asset.Name = updatedAsset.Name;
+            asset.AssetTypeId = updatedAsset.AssetTypeId;
+            asset.CompanyId = updatedAsset.CompanyId;
+            asset.OwnerTeamId = updatedAsset.OwnerTeamId;
+            asset.ContainsPII = updatedAsset.ContainsPII;
+            asset.DataSource = updatedAsset.DataSource;
+            asset.RevenuePerMinuteUsd = updatedAsset.RevenuePerMinuteUsd;
+            asset.CriticalFlowPercentage = updatedAsset.CriticalFlowPercentage;
+            asset.TotalPiiRecords = updatedAsset.TotalPiiRecords;
+            asset.AnnualLicenseCostUsd = updatedAsset.AnnualLicenseCostUsd;
+            asset.AnnualSupportHours = updatedAsset.AnnualSupportHours;
+            asset.EngineerHourlyRateUsd = updatedAsset.EngineerHourlyRateUsd;
+            asset.MonthlyDowntimeMin = updatedAsset.MonthlyDowntimeMin;
+            asset.AnnualCriticalVulnerabilities = updatedAsset.AnnualCriticalVulnerabilities;
+            asset.DataCorruptionErrors = updatedAsset.DataCorruptionErrors;
+            asset.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+            return Ok(asset);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsset(int id)
+        {
+            var asset = await _context.Assets.FindAsync(id);
+            if (asset == null) return NotFound("Asset not found");
+
+            _context.Assets.Remove(asset);
+            await _context.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
