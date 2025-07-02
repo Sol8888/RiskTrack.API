@@ -65,7 +65,7 @@ namespace RiskTrack.API.Controllers
                 AnalystNotes = $"ROSI: {rosi:N2}%"
             };
 
-            _context.RiskAnalyses.Add(analysis);
+            _context.RiskAnalysis.Add(analysis);
             await _context.SaveChangesAsync();
 
             return Ok(new
