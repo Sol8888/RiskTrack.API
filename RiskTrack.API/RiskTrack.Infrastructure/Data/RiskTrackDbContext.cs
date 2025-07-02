@@ -11,7 +11,7 @@ namespace RiskTrack.Infrastructure.Data
         public RiskTrackDbContext(DbContextOptions<RiskTrackDbContext> options) : base(options) { }
 
         public DbSet<Asset> Assets { get; set; }
-        public DbSet<RiskAnalysis> RiskAnalyses { get; set; }
+        public DbSet<RiskAnalysis> RiskAnalysis { get; set; }
         public DbSet<Incident> Incidents { get; set; }
         public DbSet<ControlMeasure> ControlMeasures { get; set; }
         public DbSet<AssetControl> AssetControls { get; set; }
