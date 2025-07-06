@@ -97,16 +97,18 @@ namespace RiskTrack.API.Controllers
             var si = _riskService.CalculateSI(asset);
 
             
-            var pd = _lossService.CalculatePD(asset.RevenuePerMinuteUsd ?? 0, 60); // asumido
+            var pd = _lossService.CalculatePD(asset.RevenuePerMinuteUsd ?? 0, 60); 
             var pi = _lossService.CalculatePI(pd);
-            var cr = _lossService.CalculateCR(4, asset.EngineerHourlyRateUsd ?? 0); // asumido
-            var dpf = _lossService.CalculateDPF(asset.TotalPiiRecords ?? 0, 10); // asumido
-            var dirf = 0; // no hay datos
-            var ces = _lossService.CalculateCES(asset.TotalPiiRecords ?? 0, 10); // asumido
+            var cr = _lossService.CalculateCR(4, asset.EngineerHourlyRateUsd ?? 0); 
+            var dpf = _lossService.CalculateDPF(asset.TotalPiiRecords ?? 0, 10); 
+            var dirf = 0;
+            var ces = _lossService.CalculateCES(asset.TotalPiiRecords ?? 0, 10); 
 
             var lm = _lossService.CalculateLM(pd, pi, cr, dpf, dirf, ces);
             var lmTipico = pd + pi + cr;
             var ale = _riskService.CalculateALE(lef, lmTipico);
+
+            var riesgoAceptado = ale <= asset.DecidedRiskUsd;
 
             return Ok(new
             {
@@ -122,6 +124,7 @@ namespace RiskTrack.API.Controllers
                 asset.MonthlyDowntimeMin,
                 asset.AnnualCriticalVulnerabilities,
                 asset.DataCorruptionErrors,
+                asset.DecidedRiskUsd,
 
                 VNA = vna,
                 SI = si,
@@ -135,7 +138,59 @@ namespace RiskTrack.API.Controllers
                 LM = lm,
                 LM_Tipico = lmTipico,
                 ALE = ale,
+                UmbralAceptable = asset.DecidedRiskUsd,
+                RiesgoAceptado = riesgoAceptado,
                 Message = "Full risk analysis summary"
+            });
+        }
+
+        [HttpPost("treatment")]
+        public async Task<IActionResult> CalculateRiskTreatment([FromBody] RiskTreatmentRequest request)
+        {
+            var asset = await _context.Assets.FirstOrDefaultAsync(a => a.AssetId == request.AssetId);
+            if (asset == null) return NotFound("Asset not found");
+
+            var lefCount = await _context.Incidents
+                .Where(i => i.AssetId == asset.AssetId && i.IncidentDate >= DateTime.UtcNow.AddYears(-1))
+                .CountAsync();
+
+            var lef = _frequencyService.CalculateLEF(lefCount);
+
+            // Cálculo del LM típico (sin control)
+            var pd = _lossService.CalculatePD(asset.RevenuePerMinuteUsd ?? 0, 60);
+            var pi = _lossService.CalculatePI(pd);
+            var cr = _lossService.CalculateCR(4, asset.EngineerHourlyRateUsd ?? 0);
+            var lmTipico = pd + pi + cr;
+
+            var aleInicial = _riskService.CalculateALE(lef, lmTipico);
+
+            // Aplicación de control
+            var reductionFactor = request.EstimatedReductionFactor;
+            var lmResidual = lmTipico * (1 - reductionFactor);
+            var aleResidual = _riskService.CalculateALE(lef, lmResidual);
+
+            // Control cost
+            var controlCost = request.ControlCost;
+
+            var gananciaNeta = (aleInicial - aleResidual) - controlCost;
+
+            // Calcular ROSI
+            var rosi = _riskService.CalculateROSI(aleInicial, aleResidual, controlCost);
+
+            // Evaluar contra el umbral aceptable
+            //bool riesgoAceptado = aleInicial <= asset.DecidedRiskUsd;
+
+            return Ok(new
+            {
+                AssetId = asset.AssetId,
+                ALE_Inicial = aleInicial,
+                ALE_Residual = aleResidual,
+                ControlCost = controlCost,
+                GananciaNeta = gananciaNeta,
+                ROSI = rosi,
+                //RiesgoAceptado = riesgoAceptado,
+                //UmbralAceptable = asset.DecidedRiskUsd,
+                Message = "Tratamiento del riesgo calculado"
             });
         }
 
@@ -156,6 +211,11 @@ namespace RiskTrack.API.Controllers
         public decimal ControlCost { get; set; }
     }
 
-
+    public class RiskTreatmentRequest
+    {
+        public string AssetId { get; set; } = default!;
+        public decimal ControlCost { get; set; }
+        public decimal EstimatedReductionFactor { get; set; } 
+    }
 }
 
