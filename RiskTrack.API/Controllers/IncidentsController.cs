@@ -47,7 +47,58 @@ namespace RiskTrack.API.Controllers
             });
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetIncident(int id)
+        {
+            var incident = await _context.Incidents.FindAsync(id);
+            if (incident == null)
+                return NotFound($"Incident with ID {id} not found.");
+
+            return Ok(incident);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateIncident(int id, [FromBody] CreateIncidentDto dto)
+        {
+            var incident = await _context.Incidents.FindAsync(id);
+            if (incident == null)
+                return NotFound($"Incident with ID {id} not found.");
+
+            incident.AssetId = dto.AssetId;
+            incident.IncidentDate = dto.IncidentDate;
+            incident.Description = dto.Description;
+            incident.ResolutionDurationHours = dto.ResolutionDurationHours;
+            incident.ImpactDurationMinutes = dto.ImpactDurationMinutes;
+
+            _context.Incidents.Update(incident);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Incident updated successfully", IncidentId = incident.IncidentId });
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteIncident(int id)
+        {
+            var incident = await _context.Incidents.FindAsync(id);
+            if (incident == null)
+                return NotFound($"Incident with ID {id} not found.");
+
+            _context.Incidents.Remove(incident);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Incident deleted successfully", IncidentId = id });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllIncidents()
+        {
+            var incidents = await _context.Incidents.ToListAsync();
+            return Ok(incidents);
+        }
+
+
     }
+
     public class CreateIncidentDto
     {
         public string AssetId { get; set; }
