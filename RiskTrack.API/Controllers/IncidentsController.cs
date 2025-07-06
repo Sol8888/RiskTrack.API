@@ -48,7 +48,7 @@ namespace RiskTrack.API.Controllers
     }
     public class CreateIncidentDto
     {
-        public int AssetId { get; set; }
+        public string AssetId { get; set; }
         public DateTime IncidentDate { get; set; }
         public string Description { get; set; }
         public int? ResolutionDurationHours { get; set; }
