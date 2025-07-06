@@ -89,7 +89,7 @@ namespace RiskTrack.API.Controllers
             var asset = await _context.Assets.FindAsync(id);
             if (asset == null) return NotFound("Asset not found");
 
-            // Actualizar campos (hazlo cuidadosamente)
+            
             asset.Name = updatedAsset.Name;
             asset.AssetTypeId = updatedAsset.AssetTypeId;
             asset.CompanyId = updatedAsset.CompanyId;
@@ -102,10 +102,11 @@ namespace RiskTrack.API.Controllers
             asset.AnnualLicenseCostUsd = updatedAsset.AnnualLicenseCostUsd;
             asset.AnnualSupportHours = updatedAsset.AnnualSupportHours;
             asset.EngineerHourlyRateUsd = updatedAsset.EngineerHourlyRateUsd;
-            asset.MonthlyDowntimeMin = updatedAsset.MonthlyDowntimeMin;
+            asset.MonthlyDowntimeMin = updatedAsset.MonthlyDowntimeMin; 
             asset.AnnualCriticalVulnerabilities = updatedAsset.AnnualCriticalVulnerabilities;
             asset.DataCorruptionErrors = updatedAsset.DataCorruptionErrors;
             asset.UpdatedAt = DateTime.UtcNow;
+            asset.DecidedRiskUsd = updatedAsset.DecidedRiskUsd;
 
             await _context.SaveChangesAsync();
             return Ok(asset);

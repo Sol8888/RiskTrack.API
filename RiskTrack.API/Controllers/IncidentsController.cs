@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskTrack.API.RiskTrack.Domain.Entities;
 using RiskTrack.Infrastructure.Data;
