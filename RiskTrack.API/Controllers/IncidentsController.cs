@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskTrack.API.RiskTrack.Domain.Entities;
@@ -23,8 +24,8 @@ namespace RiskTrack.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var assetExists = await _context.Assets.FindAsync(dto.AssetId);
-            if (assetExists == null)
+            var asset = await _context.Assets.FirstOrDefaultAsync(a => a.AssetId == dto.AssetId);
+            if (asset == null)
                 return NotFound($"AssetId {dto.AssetId} not found.");
 
             var incident = new Incident
@@ -45,6 +46,7 @@ namespace RiskTrack.API.Controllers
                 IncidentId = incident.IncidentId
             });
         }
+
     }
     public class CreateIncidentDto
     {
