@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace RiskTrack.API.RiskTrack.Domain.Entities
+namespace RiskTrack.API.Domain.Entities
 {
     public class Asset
     {

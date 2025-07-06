@@ -1,6 +1,6 @@
-﻿using RiskTrack.API.RiskTrack.Domain.Entities;
+﻿using RiskTrack.API.Domain.Entities;
 
-namespace RiskTrack.API.RiskTrack.Application.Services
+namespace RiskTrack.API.Application.Services
 {
     public class RiskCalculationService
     {

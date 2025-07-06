@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RiskTrack.API.RiskTrack.Application.Services;
-using RiskTrack.API.RiskTrack.Domain.Entities;
+using RiskTrack.API.Application.Services;
+using RiskTrack.API.Domain.Entities;
 using RiskTrack.Infrastructure.Data;
 
 

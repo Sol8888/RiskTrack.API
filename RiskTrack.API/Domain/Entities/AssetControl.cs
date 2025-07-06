@@ -1,4 +1,4 @@
-﻿namespace RiskTrack.API.RiskTrack.Domain.Entities
+﻿namespace RiskTrack.API.Domain.Entities
 {
     public class AssetControl
     {

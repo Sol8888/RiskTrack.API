@@ -2,7 +2,7 @@
 using System.Reflection.Emit;
 using System;
 using Microsoft.EntityFrameworkCore;
-using RiskTrack.API.RiskTrack.Domain.Entities;
+using RiskTrack.API.Domain.Entities;
 
 namespace RiskTrack.Infrastructure.Data
 {

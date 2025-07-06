@@ -2,7 +2,7 @@
 using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using RiskTrack.API.RiskTrack.Domain.Entities;
+using RiskTrack.API.Domain.Entities;
 using RiskTrack.Infrastructure.Data;
 
 namespace RiskTrack.API.Controllers

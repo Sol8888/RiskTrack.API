@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace RiskTrack.API.RiskTrack.Domain.Entities
+namespace RiskTrack.API.Domain.Entities
 {
     public class Incident
     {

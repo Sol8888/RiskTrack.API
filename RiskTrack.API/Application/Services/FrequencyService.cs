@@ -1,4 +1,4 @@
-﻿namespace RiskTrack.API.RiskTrack.Application.Services
+﻿namespace RiskTrack.API.Application.Services
 {
     public class FrequencyService
     {
