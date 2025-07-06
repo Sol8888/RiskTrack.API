@@ -90,67 +90,23 @@ namespace RiskTrack.API.Controllers
             var lefCount = await _context.Incidents
                 .Where(i => i.AssetId == asset.AssetId && i.IncidentDate >= DateTime.UtcNow.AddYears(-1))
                 .CountAsync();
+
             var lef = _frequencyService.CalculateLEF(lefCount);
+
             var vna = _riskService.CalculateVNA(asset);
             var si = _riskService.CalculateSI(asset);
 
-            var pd = _lossService.CalculatePD(asset.RevenuePerMinuteUsd ?? 0, 60); 
+            
+            var pd = _lossService.CalculatePD(asset.RevenuePerMinuteUsd ?? 0, 60); // asumido
             var pi = _lossService.CalculatePI(pd);
-            var cr = _lossService.CalculateCR(4, asset.EngineerHourlyRateUsd ?? 0); 
-            var dpf = _lossService.CalculateDPF(asset.TotalPiiRecords ?? 0, 10); 
-            var dirf = 0; 
-            var ces = _lossService.CalculateCES(asset.TotalPiiRecords ?? 0, 10);
+            var cr = _lossService.CalculateCR(4, asset.EngineerHourlyRateUsd ?? 0); // asumido
+            var dpf = _lossService.CalculateDPF(asset.TotalPiiRecords ?? 0, 10); // asumido
+            var dirf = 0; // no hay datos
+            var ces = _lossService.CalculateCES(asset.TotalPiiRecords ?? 0, 10); // asumido
+
             var lm = _lossService.CalculateLM(pd, pi, cr, dpf, dirf, ces);
-            var ale = _riskService.CalculateALE(lef, pd + pi + cr); 
-
-            
-            var riskStatus = ale > (asset.DecidedRiskUsd ?? 0)
-                ? "Riesgo Inaceptable"
-                : "Riesgo Aceptable";
-
-           
-            string treatmentRecommendation;
-            if (vna > 200_000 && si > 6)
-                treatmentRecommendation = "Alta Prioridad";
-            else if (vna > 200_000)
-                treatmentRecommendation = "Activo Robusto";
-            else if (si > 6)
-                treatmentRecommendation = "Riesgo Técnico Moderado";
-            else
-                treatmentRecommendation = "Riesgo Bajo";
-
-            
-            var controls = await _context.AssetControls
-                .Where(ac => ac.AssetId == asset.AssetId && ac.Status == "Activo")
-                .Join(_context.ControlMeasures, ac => ac.ControlMeasureId, cm => cm.ControlMeasureId,
-                    (ac, cm) => cm)
-                .ToListAsync();
-
-            decimal residualAle = ale;
-            decimal totalControlCost = 0;
-            var controlSummary = new List<object>();
-
-            foreach (var control in controls)
-            {
-                var freqReduction = control.EstimatedFrequencyReduction ?? 0;
-                var magReduction = control.EstimatedMagnitudeReduction ?? 0;
-
-                residualAle *= (1 - freqReduction) * (1 - magReduction);
-                totalControlCost += control.AnnualCostUsd ?? 0;
-
-                controlSummary.Add(new
-                {
-                    control.Name,
-                    control.Description,
-                    control.AnnualCostUsd,
-                    freqReduction,
-                    magReduction
-                });
-            }
-
-            decimal rosi = totalControlCost > 0
-                ? _riskService.CalculateROSI(ale, residualAle, totalControlCost)
-                : 0;
+            var lmTipico = pd + pi + cr;
+            var ale = _riskService.CalculateALE(lef, lmTipico);
 
             return Ok(new
             {
@@ -166,6 +122,7 @@ namespace RiskTrack.API.Controllers
                 asset.MonthlyDowntimeMin,
                 asset.AnnualCriticalVulnerabilities,
                 asset.DataCorruptionErrors,
+
                 VNA = vna,
                 SI = si,
                 LEF = lef,
@@ -176,14 +133,9 @@ namespace RiskTrack.API.Controllers
                 DPF = dpf,
                 DIRF = dirf,
                 LM = lm,
+                LM_Tipico = lmTipico,
                 ALE = ale,
-                ResidualALE = residualAle,
-                TotalControlCost = totalControlCost,
-                ROSI = rosi,
-                RiskStatus = riskStatus,
-                TreatmentRecommendation = treatmentRecommendation,
-                Controls = controlSummary,
-                Message = "Full risk analysis summary with treatment insights"
+                Message = "Full risk analysis summary"
             });
         }
 
