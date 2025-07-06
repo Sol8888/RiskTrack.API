@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace RiskTrack.API.RiskTrack.Domain.Entities
 {
     public class Asset
     {
         [Key]
+        [JsonIgnore]
         public int AssetCod { get; set; }
         public int AssetId { get; set; }
         public string? Name { get; set; }
