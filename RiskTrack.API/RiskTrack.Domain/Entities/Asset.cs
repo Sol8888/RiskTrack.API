@@ -1,7 +1,11 @@
-﻿namespace RiskTrack.API.RiskTrack.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace RiskTrack.API.RiskTrack.Domain.Entities
 {
     public class Asset
     {
+        [Key]
+        public int AssetCod { get; set; }
         public int AssetId { get; set; }
         public string? Name { get; set; }
         public int? AssetTypeId { get; set; }
@@ -20,6 +24,8 @@
         public int? DataCorruptionErrors { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+
+        public decimal? DecidedRiskUsd { get; set; }
 
     }
 }
