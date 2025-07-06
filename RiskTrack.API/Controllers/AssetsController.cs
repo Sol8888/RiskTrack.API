@@ -66,9 +66,9 @@ namespace RiskTrack.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAssetById(int id)
+        public async Task<IActionResult> GetAssetById(string id)
         {
-            var asset = await _context.Assets.FindAsync(id);
+            var asset = await _context.Assets.FirstOrDefaultAsync(a => a.AssetId == id);
             if (asset == null) return NotFound("Asset not found");
             return Ok(asset);
         }

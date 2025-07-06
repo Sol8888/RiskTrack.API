@@ -26,7 +26,7 @@ namespace RiskTrack.API.Controllers
         [HttpPost("calculate")]
         public async Task<IActionResult> CalculateRiskAnalysis([FromBody] RiskAnalysisRequest request)
         {
-            var asset = await _context.Assets.FindAsync(request.AssetId);
+            var asset = await _context.Assets.FirstOrDefaultAsync(a => a.AssetId == request.AssetId);
             if (asset == null) return NotFound("Asset not found");
 
             
@@ -82,9 +82,9 @@ namespace RiskTrack.API.Controllers
         }
 
         [HttpGet("full/{assetId}")]
-        public async Task<IActionResult> GetFullRiskAnalysis(int assetId)
+        public async Task<IActionResult> GetFullRiskAnalysis(string assetId)
         {
-            var asset = await _context.Assets.FindAsync(assetId);
+            var asset = await _context.Assets.FirstOrDefaultAsync(a => a.AssetId == assetId);
             if (asset == null) return NotFound("Asset not found");
 
             var lefCount = await _context.Incidents
@@ -145,7 +145,7 @@ namespace RiskTrack.API.Controllers
 
     public class RiskAnalysisRequest
     {
-        public int AssetId { get; set; }
+        public string AssetId { get; set; } = default!;
         public int IncidentDurationMinutes { get; set; }
         public int ResponseHours { get; set; }
         public decimal HourlyRate { get; set; }

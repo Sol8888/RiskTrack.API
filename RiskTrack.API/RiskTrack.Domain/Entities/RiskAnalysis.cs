@@ -3,7 +3,7 @@
     public class RiskAnalysis
     {
         public int RiskAnalysisId { get; set; }
-        public int? AssetId { get; set; }
+        public string? AssetId { get; set; } = default!;
         public DateTime? AnalysisDate { get; set; }
         public decimal? VnaValue { get; set; }
         public decimal? SiValue { get; set; }

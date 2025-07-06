@@ -8,7 +8,7 @@ namespace RiskTrack.API.RiskTrack.Domain.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int IncidentId { get; set; }
-        public int? AssetId { get; set; }
+        public string? AssetId { get; set; }
         public DateTime? IncidentDate { get; set; }
         public string? Description { get; set; }
         public int? ResolutionDurationHours { get; set; }

@@ -8,7 +8,7 @@ namespace RiskTrack.API.RiskTrack.Domain.Entities
         [Key]
         [JsonIgnore]
         public int AssetCod { get; set; }
-        public int AssetId { get; set; }
+        public string? AssetId { get; set; } = default!;
         public string? Name { get; set; }
         public int? AssetTypeId { get; set; }
         public int? CompanyId { get; set; }
