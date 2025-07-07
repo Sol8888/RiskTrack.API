@@ -31,7 +31,7 @@ namespace RiskTrack.API.Controllers
 
         
         [HttpGet("vna/{id}")]
-        public async Task<IActionResult> CalculateVNA(int id)
+        public async Task<IActionResult> CalculateVNA(string id)
         {
             var asset = await _context.Assets.FindAsync(id);
             if (asset == null)
@@ -112,14 +112,15 @@ namespace RiskTrack.API.Controllers
             return Ok(asset);
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsset(int id)
+        [HttpDelete("{assetId}")]
+        public async Task<IActionResult> DeleteAsset(string assetId)
         {
-            var asset = await _context.Assets.FindAsync(id);
+            var asset = await _context.Assets.FirstOrDefaultAsync(a => a.AssetId == assetId);
             if (asset == null) return NotFound("Asset not found");
 
             _context.Assets.Remove(asset);
             await _context.SaveChangesAsync();
+
             return NoContent();
         }
     }
