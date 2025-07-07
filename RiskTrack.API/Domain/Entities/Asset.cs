@@ -13,7 +13,7 @@ namespace RiskTrack.API.Domain.Entities
         public int? AssetTypeId { get; set; }
         public int? CompanyId { get; set; }
         public int? OwnerTeamId { get; set; }
-        public bool? ContainsPII { get; set; }
+        public bool ContainsPII { get; set; }
         public string? DataSource { get; set; }
         public decimal? RevenuePerMinuteUsd { get; set; }
         public decimal? CriticalFlowPercentage { get; set; }
