@@ -1,9 +1,18 @@
+using HealthChecks.SqlServer;
 using Microsoft.EntityFrameworkCore;
 using RiskTrack.Infrastructure.Data;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddHealthChecks()
+    .AddCheck("sql-server-db", new SqlServerHealthCheck(
+        new SqlServerHealthCheckOptions
+        {
+            ConnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+        }),
+        tags: new[] { "database" });
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -24,7 +33,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
+
+app.MapHealthChecks("/health");
 
 app.UseAuthorization();
 
